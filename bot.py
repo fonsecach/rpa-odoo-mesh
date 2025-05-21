@@ -50,30 +50,31 @@ async def process_company(page, company_name):
         await page.wait_for_timeout(3000)  # Aguardar resultados
         
         # Selecionar todos
-        await page.locator('//*[@id="checkbox-comp-2078"]').click(timeout=40000)
+        #await page.pause()
+        await page.locator('th.o_list_record_selector input[type="checkbox"]').click()
+
         
         # Abrir menu de ações
-        await page.locator('xpath=/html/body/div[1]/div/div/div/div[2]/div/div[2]/div/button/span').click(timeout=40000)
+        await page.locator('body > div.o_action_manager > div > div > div > div.o_control_panel_actions.d-empty-none.d-flex.align-items-center.justify-content-start.justify-content-lg-around.order-2.order-lg-1.w-100.mw-100.w-lg-auto > div > div.o_cp_action_menus.d-flex.pe-2.gap-1 > div > button').click(timeout=40000)
         await page.wait_for_timeout(1500)
         
         # Clicar em mesclar
-        await page.locator('xpath=/html/body/div[2]/div[1]/div/div/span[8]').click(timeout=40000)
+        await page.locator('span.o-dropdown-item:has-text("Mesclar")').click(timeout=5000)
         await page.wait_for_timeout(1500)
         
         # Confirmar mesclagem
-        await page.locator('xpath=//*[@id="dialog_48"]/div/div/div/footer/button[1]').click(timeout=40000)
-        
+        await page.get_by_role("button", name="Mesclar contatos").click(timeout=10000)
+
         # Aguardar processamento com timeout maior
-        await page.wait_for_timeout(10000)
-        
+        await page.locator('h2:has-text("Não há mais contatos para mesclar para esta solicitação")').wait_for(state="visible", timeout=10000)
+
         # Fechar diálogo
-        await page.locator('xpath=//*[@id="dialog_49"]/div/div/div/footer/button[1]').click(timeout=40000)
-        
+        await page.get_by_role("button", name="Fechar").click(timeout=5000)
+
         # Limpar pesquisa
         await search_input.click()
-        await page.keyboard.press('Control+A')
         await page.keyboard.press('Backspace')
-        await page.wait_for_timeout(1000)
+        await page.wait_for_timeout(2500)
 
     except Exception as e:
         print(f"Erro ao processar {company_name}: {str(e)}")
